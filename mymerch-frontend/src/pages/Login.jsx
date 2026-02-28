@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { loginUserApi } from '../services/api'; // Ensure this path matches your file structure
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -47,31 +47,30 @@ export default function LoginPage() {
     
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
+      
       try {
-       // Change this line:
-const response = await axios.post('http://localhost:4000/api/user/login', {
-  email: formData.email,
-  password: formData.password
-});
+        // 1. API Call
+        const response = await loginUserApi(formData);
+        
+        // 2. Success Handling (Assuming your backend returns { token, user: { role } })
+        if (response.data.success) {
+            localStorage.setItem("jwtToken", response.data.token);
+            localStorage.setItem("user", response.data.user);
+            const role = response.data.role;
 
-        // Destructure data from your AuthController
-        const { token, role, username } = response.data;
-
-        // 1. Store session data
-        localStorage.setItem('token', token);
-        localStorage.setItem('role', role);
-        localStorage.setItem('username', username);
-
-        // 2. Role-based Redirection
-        if (role === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/dashboard');
+            // 3. Role-based Redirection
+            console.log("Login successful, user role:", role); // Debugging line
+            if (role === 'user') {
+              navigate('/dashboard'); // Redirect to user dashboard
+            } else {
+              navigate('/dashboard');
+            }
         }
-
       } catch (err) {
-        const serverMsg = err.response?.data?.message || 'Connection to server failed';
+        // Handle unauthorized or server errors
+        const serverMsg = err.response?.data?.message || 'Invalid email or password';
         setErrors({ server: serverMsg });
+        console.error("Login error:", err);
       } finally {
         setIsLoading(false);
       }
@@ -165,7 +164,15 @@ const response = await axios.post('http://localhost:4000/api/user/login', {
                 disabled={isLoading}
                 className={`w-full bg-orange-500 text-white py-3 rounded-lg font-semibold hover:bg-orange-600 transition duration-200 shadow-md hover:shadow-lg flex items-center justify-center ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                {isLoading ? 'Signing in...' : 'Sign In'}
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Signing in...
+                  </span>
+                ) : 'Sign In'}
               </button>
             </form>
 
@@ -186,7 +193,7 @@ const response = await axios.post('http://localhost:4000/api/user/login', {
         <div className="text-center text-white">
           <div className="mb-8">
             <div className="w-32 h-32 mx-auto bg-white rounded-full flex items-center justify-center mb-6 shadow-2xl animate-bounce">
-              <span className="text-6xl">🛍️</span>
+              <span className="text-6xl" role="img" aria-label="Shopping Bags">🛍️</span>
             </div>
           </div>
           <h1 className="text-6xl font-bold mb-4">MyMerch</h1>

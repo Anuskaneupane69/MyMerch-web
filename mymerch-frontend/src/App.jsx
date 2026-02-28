@@ -4,52 +4,38 @@ import LoginPage from './pages/Login';
 import HomePage from './pages/Home';
 import Admin from './pages/Admin/Admin';
 import UserDashboard from './pages/DashBoard';
-
-// 1. Create a Protection Wrapper
-const ProtectedRoute = ({ children, allowedRole }) => {
-  const token = localStorage.getItem('token');
-  const userRole = localStorage.getItem('role');
-
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (allowedRole && userRole !== allowedRole) {
-    // If a standard user tries to go to /admin, send them to user dashboard
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return children;
-};
+import { Toaster } from 'react-hot-toast';
+import {ProtectedRoute} from './pages/protected/protectRoute';
 
 function App() {
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<HomePage />} />
-      <Route path="/signup" element={<SignupPage />} />
-      <Route path="/login" element={<LoginPage />} />
-
-      {/* User Dashboard - only for role: 'user' */}
-      <Route 
-        path="/dashboard" 
-        element={
-          <ProtectedRoute allowedRole="user">
-            <UserDashboard />
-          </ProtectedRoute>
-        } 
+    <>
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
       />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/login" element={<LoginPage />} />
 
-      {/* Admin Panel - only for role: 'admin' */}
-      <Route 
-        path="/admin" 
-        element={
-          <ProtectedRoute allowedRole="admin">
-            <Admin />
-          </ProtectedRoute>
-        } 
-      />
-    </Routes>
+        {/* Dashboard Route */}
+        <Route 
+          path="/dashboard" 
+          element={
+              <UserDashboard />
+          } 
+        />
+
+        {/* Admin Route */}
+        <Route 
+          path="/admin" 
+          element={
+              <Admin />
+          } 
+        />
+      </Routes>
+    </>
   );
 }
 
