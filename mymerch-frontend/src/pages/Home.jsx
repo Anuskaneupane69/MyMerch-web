@@ -24,8 +24,8 @@ export default function HomePage() {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-gray-600 hover:text-orange-500 transition">Features</a>
-              <a href="#about" className="text-gray-600 hover:text-orange-500 transition">About</a>
-              <a href="#contact" className="text-gray-600 hover:text-orange-500 transition">Contact</a>
+              {/* <a href="#about" className="text-gray-600 hover:text-orange-500 transition">About</a>
+              <a href="#contact" className="text-gray-600 hover:text-orange-500 transition">Contact</a> */}
               <Link to="/login" className="text-gray-600 hover:text-orange-500 transition">Login</Link>
               <Link to="/signup" className="bg-orange-500 text-white px-6 py-2 rounded-lg">Sign Up</Link>
             </div>
@@ -66,10 +66,10 @@ export default function HomePage() {
               Manage, track, and grow your merchandise business with ease. MyMerch provides everything you need in one powerful platform.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="#" className="bg-orange-500 text-white px-8 py-4 rounded-lg hover:bg-orange-600 transition text-lg font-semibold shadow-lg">
+              <a href="/signup" className="bg-orange-500 text-white px-8 py-4 rounded-lg hover:bg-orange-600 transition text-lg font-semibold shadow-lg">
                 Get Started Free
               </a>
-              <a href="#" className="bg-white text-orange-500 px-8 py-4 rounded-lg hover:bg-gray-50 transition text-lg font-semibold border-2 border-orange-500">
+              <a href="#features" className="bg-white text-orange-500 px-8 py-4 rounded-lg hover:bg-gray-50 transition text-lg font-semibold border-2 border-orange-500">
                 Learn More
               </a>
             </div>

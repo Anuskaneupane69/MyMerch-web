@@ -1,25 +1,31 @@
 import { Navigate, Outlet } from "react-router-dom";
 import getUserRole from "./authRole";
- 
+
 const ProtectedRoute = ({ element, allowedRoles }) => {
   const role = getUserRole();
- 
-  if (!role || !allowedRoles.includes(role)) {
+
+  // Not logged in → go to login
+  if (!role) {
     localStorage.removeItem("jwtToken");
-    return <Navigate to="/signin" replace />;
+    return <Navigate to="/login" replace />;
   }
- 
+
+  // Wrong role → redirect to THEIR correct page
+  if (!allowedRoles.includes(role)) {
+    return <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} replace />;
+  }
+
   return element;
 };
 
-
 const PublicRoute = () => {
-    const token = localStorage.getItem('jwtToken'); 
+  const role = getUserRole();
 
-    if (token) {
-        return <Navigate to="/" replace />;
-    }
-    return <Outlet />;
+  if (role) {
+    return <Navigate to={role === 'admin' ? '/admin' : '/dashboard'} replace />;
+  }
+
+  return <Outlet />;
 };
 
-export {PublicRoute, ProtectedRoute};
+export { PublicRoute, ProtectedRoute };
