@@ -37,7 +37,7 @@ const Admin = () => {
   const [imagePreview, setImagePreview]     = useState('');
   const [toast, setToast]                   = useState(null);
 
-  const BASE_URL = 'http://localhost:4000';
+  const BASE_URL = 'http://localhost:5000';
 
   useEffect(() => { fetchProducts(); }, []);
 

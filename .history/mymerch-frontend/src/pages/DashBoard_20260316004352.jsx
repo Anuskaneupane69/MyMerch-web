@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ShoppingBag, ShoppingCart, Heart, Search,
-  Star, X, Loader2, MessageSquare, Trash2, Send, ShieldAlert, CheckCircle2, Package, LogOut
+  Star, X, Loader2, MessageSquare, Trash2, Send, ShieldAlert, CheckCircle2, Package
 } from 'lucide-react';
 import { 
   addReviewApi, deleteReviewApi, getProductsApi, getReviewsByProductApi,
@@ -41,11 +41,6 @@ const UserDashboard = () => {
       return JSON.parse(atob(token.split('.')[1]));
     } catch { return null; }
   });
-
-  const handleLogout = () => {
-    localStorage.removeItem('jwtToken');
-    window.location.href = '/';
-  };
 
   // ── Fetch products ────────────────────────────────────────
   useEffect(() => {
@@ -181,19 +176,19 @@ const UserDashboard = () => {
   const removeFromCart = (id) => setCart(prev => prev.filter(i => i.id !== id));
 
   // ── Wishlist ──────────────────────────────────────────────
-  const toggleWishlist = async (product) => {
-    if (!currentUser) return;
-    try {
-      await toggleWishlistApi(product.id);
-      setWishlist(prev => {
-        const exists = prev.find(i => Number(i.productId) === Number(product.id));
-        if (exists) return prev.filter(i => Number(i.productId) !== Number(product.id));
-        return [...prev, { productId: product.id, product }];
-      });
-    } catch (e) {
-      console.error('Failed to toggle wishlist:', e);
-    }
-  };
+const toggleWishlist = async (product) => {
+  if (!currentUser) return;
+  try {
+    await toggleWishlistApi(product.id);
+    setWishlist(prev => {
+      const exists = prev.find(i => Number(i.productId) === Number(product.id));
+      if (exists) return prev.filter(i => Number(i.productId) !== Number(product.id));
+      return [...prev, { productId: product.id, product }];
+    });
+  } catch (e) {
+    console.error('Failed to toggle wishlist:', e);
+  }
+};
 
   // ── Checkout ──────────────────────────────────────────────
   const handleCheckout = async () => {
@@ -216,11 +211,7 @@ const UserDashboard = () => {
         setCart(prev => prev.filter(i => !successIds.includes(i.id)));
       }
       if (failed.length) setCheckoutError(`Could not order: ${failed.join(', ')}. Check stock.`);
-      else {
-        setShowCart(false);
-        setShowOrders(true);
-        alert('✅ Order placed! Please contact 9822504080 to receive your order.');
-      }
+      else { setShowCart(false); setShowOrders(true); }
     } catch (e) {
       setCheckoutError(e?.response?.data?.message || 'Checkout failed.');
     } finally {
@@ -301,6 +292,7 @@ const UserDashboard = () => {
                 </span>
               )}
             </button>
+            {/* ── Wishlist button now opens sidebar ── */}
             <button onClick={() => setShowWishlist(true)} className="relative group p-2">
               <Heart className="w-6 h-6 text-gray-600 group-hover:text-red-500 transition-colors" />
               {wishlist.length > 0 && (
@@ -308,13 +300,6 @@ const UserDashboard = () => {
                   {wishlist.length}
                 </span>
               )}
-            </button>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white text-sm font-semibold rounded-lg hover:bg-red-600 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              Logout
             </button>
           </div>
         </div>
@@ -424,16 +409,10 @@ const UserDashboard = () => {
                   className="w-full py-4 bg-orange-500 text-white rounded-xl font-bold shadow-lg hover:bg-orange-600 disabled:bg-gray-300 transition-colors flex items-center justify-center gap-2">
                   {checkingOut ? <><Loader2 className="w-5 h-5 animate-spin" /> Processing...</> : 'Checkout Now'}
                 </button>
-                <div className="mt-4 flex items-center gap-3 bg-orange-50 border border-orange-200 rounded-xl px-4 py-3">
-                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center shrink-0">
-                    <span className="text-white text-sm">📞</span>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 font-medium">For order inquiries, call us:</p>
-                    <p className="text-sm font-bold text-gray-900">9822504080</p>
-                  </div>
-                </div>
               </div>
+
+              
+              
             )}
           </div>
         </div>
